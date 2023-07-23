@@ -17,7 +17,7 @@ districts.crs.to_epsg(3857)
 files = glob.glob(r'Vector Data Projects\washington_data\Construction*')
 df_list = [] # initialise variable
 for file in files:
-    year = file.split('_')[-1].split('.')[0] # split the file at _ and . in positions [1] and [0]
+    year = file.split('_')[-1].split('.')[0] # split the file at _ and . in positions [-1] and [0]
     gdf = gpd.read_file(file) # read file and store in variable
     gdf['year'] = year # add a year column
     df_list.append(gdf) # append to list
