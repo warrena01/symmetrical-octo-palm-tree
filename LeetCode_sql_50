@@ -82,13 +82,17 @@ group by s.student_id, s.student_name, sj.subject_name
 order by s.student_id, student_name
 
 -- Question 13:
+
+-- Question 14: 
+
+-- Question 15:
 select id, movie, description, rating
 from Cinema 
 where id % 2 <> 0 and -- <> 0 for odds, = 0 for evens.
       description != 'boring'
 order by rating desc
 
--- Question 14:
+-- Question 16:
 select p.product_id, 
        round(cast(sum(p.price * us.units) as decimal) 
             /cast(sum(us.units) as decimal), 2) as average_price
@@ -99,7 +103,7 @@ join unitssold as us
   and us.purchase_date <= p.end_Date
 group by p.product_id 
 
--- Question 15:
+-- Question 17:
 select p.project_id,
        round(avg(cast(e.experience_years as decimal)), 2) as average_years
 from project p
@@ -107,7 +111,7 @@ join employee e on
   p.employee_id = e.employee_id
 group by p.project_id
 
--- Question 16:
+-- Question 18:
 select p.project_id, 
        round((avg(cast(e.experience_years as decimal))), 2) as average_years
 from project as p
@@ -115,7 +119,7 @@ left join employee as e on
   p.employee_id = e.employee_id
 group by p.project_id
 
--- Question 17:
+-- Question 19:
 select  r.contest_id, 
         round((count(u.user_id*1.0)/
         (select count(user_id)*1.0 from users)
@@ -125,3 +129,21 @@ join users u on
     r.user_id = u.user_id
 group by r.contest_id
 order by percentage desc, contest_id asc
+
+-- Question 20:
+select  query_name,
+        round(avg(rating*1.0/position*1.0), 2) as quality,
+        round((sum(case when rating < 3 then 1 else 0 end)*1.0 / count(*)*1.0 * 100), 2) as poor_query_percentage
+from queries
+group by query_name
+
+-- Question 21
+select activity_date as day, 
+count(distinct(user_id)) as active_users
+from activity 
+where datediff(day, activity_date, '2019-07-27') between 0 and 29
+group by activity_date
+
+
+
+ 
