@@ -114,3 +114,14 @@ from project as p
 left join employee as e on
   p.employee_id = e.employee_id
 group by p.project_id
+
+-- Question 17:
+select  r.contest_id, 
+        round((count(u.user_id*1.0)/
+        (select count(user_id)*1.0 from users)
+        *100), 2) as percentage
+from register r
+join users u on 
+    r.user_id = u.user_id
+group by r.contest_id
+order by percentage desc, contest_id asc
