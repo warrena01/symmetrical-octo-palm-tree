@@ -130,19 +130,31 @@ join users u on
 group by r.contest_id
 order by percentage desc, contest_id asc
 
--- Question 20:
+-- Question 23:
 select  query_name,
         round(avg(rating*1.0/position*1.0), 2) as quality,
         round((sum(case when rating < 3 then 1 else 0 end)*1.0 / count(*)*1.0 * 100), 2) as poor_query_percentage
 from queries
 group by query_name
 
--- Question 21
+-- Question 24:
 select activity_date as day, 
 count(distinct(user_id)) as active_users
 from activity 
 where datediff(day, activity_date, '2019-07-27') between 0 and 29
 group by activity_date
+
+-- Question 25:
+select class
+from courses 
+group by class
+having count(student) >= 5
+
+-- Question 26:
+select user_id, 
+       count(distinct(follower_id)) as followers_count
+from followers
+group by user_id
 
 
 
