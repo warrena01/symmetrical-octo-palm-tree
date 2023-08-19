@@ -82,8 +82,29 @@ group by s.student_id, s.student_name, sj.subject_name
 order by s.student_id, student_name
 
 -- Question 13:
+with find_managerid as (
+select managerid
+from employee
+group by managerid
+having count(managerid) >= 5
+)
+select name
+from employee e
+inner join find_managerid f
+on e.id = f.managerid
 
 -- Question 14: 
+select s.user_id,
+        round(
+        avg(case 
+          when c.action = 'confirmed' then 1.0
+          else 0
+        end),
+         2) as confirmation_rate
+from signups s
+left join confirmations c on
+  s.user_id = c.user_id
+group by s.user_id
 
 -- Question 15:
 select id, movie, description, rating
@@ -155,6 +176,21 @@ select user_id,
        count(distinct(follower_id)) as followers_count
 from followers
 group by user_id
+
+-- Question 27:
+with unique_num as (
+select num
+from mynumbers
+group by num
+having count(num) < 2
+)
+select 
+case
+when (select count(*) from unique_num) < 1 then null
+when (select count(*) from unique_num) >= 1 then max(num)
+end as num
+from unique_num
+
 
 
 
