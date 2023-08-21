@@ -159,8 +159,34 @@
             order by percentage desc, contest_id asc
             
             -- Question 20:
-            
+            select    format(trans_date, 'yyyy-MM') as 'month',
+                      country,
+                      count(trans_date) as trans_count, 
+                      count(iif(state='approved', 1, null)) as approved_count,
+                      sum(amount) as trans_total_amount,
+                      sum(iif(state='approved', amount, 0)) as approved_total_amount
+            from transactions
+            group by format(trans_date, 'yyyy-MM'), country
+
             -- Question 21:
+            with cte as (
+              select *,
+              case 
+                when order_date = customer_pref_delivery_Date then 1.0
+                else 0.0
+              end as order_type,
+              first_value(order_date) over (partition by customer_id order by order_date) as first_order
+              from delivery
+            ),
+            -- this refines the table to date that we need
+            cte_2 as (
+              select * 
+              from cte
+              where first_order = order_date
+            )
+            select round(sum(order_type) * 100 / count(customer_id)*1.0, 2) as immediate_percentage
+            from cte_2
+
             
             -- Question 22:
 
@@ -215,6 +241,16 @@
             when (select count(*) from unique_num) >= 1 then max(num)
             end as num
             from unique_num
+
+            -- Question 29:
+            with cte as (
+            select count(product_key) as n_of_products
+            from product)
+            select customer_id
+            from customer 
+            group by customer_id
+            having count(distinct(product_key)) = (select * from cte)
+
             
             
             
