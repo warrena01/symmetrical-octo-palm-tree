@@ -187,8 +187,25 @@
             select round(sum(order_type) * 100 / count(customer_id)*1.0, 2) as immediate_percentage
             from cte_2
 
-            
             -- Question 22:
+            with first_date as (
+              select player_id, min(event_date) as first_date
+              from activity
+              group by player_id
+            ),
+            played_next_day as (
+              select cast(count(a.player_id) as decimal) as next_day_count
+              from activity a
+              join first_date fd on
+                a.player_id = fd.player_id
+                and datediff(day, fd.first_date, a.event_date) = 1
+            ),
+            total_players as (
+              select cast(count(distinct(player_id)) as decimal) as total_players_count
+              from activity
+            )
+            select round(next_day_count / total_players_count, 2) as fraction
+            from played_next_day, total_players
 
 -- SORTING AND GROUPING 
             
