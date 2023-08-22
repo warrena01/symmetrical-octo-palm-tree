@@ -268,7 +268,46 @@
             group by customer_id
             having count(distinct(product_key)) = (select * from cte)
 
+-- ADVANCED SELECT AND JOINS
+
+            -- Question 30:
+            select  e2.employee_id, e2.name, 
+                    count(e1.employee_id) as reports_count,
+                    round((avg(e1.age*1.0)), 0) as average_age
+            from employees e1
+            join employees e2 on
+                e1.reports_to = e2.employee_id
+            group by e2.employee_id, e2.name
+            order by e2.employee_id asc
             
+            -- Question 31:
+            with cte as (
+              select employee_id, department_id, primary_flag,
+              count(department_id) over (partition by employee_id) as department_count
+              from employee
+            )
+            select employee_id, department_id
+            from cte
+            where primary_flag = 'Y' or department_count = 1
+            
+            -- Question 32:
+            /* Triangle Inequality Theorem: the sum of two side lengths of a 
+            triangle is always greater than the third side */
+            select *, 
+                  iif(x+y > z and x+z > y and y+z > x, 'Yes', 'No') as triangle
+            from triangle
+            
+            -- Question 33:
+            select distinct(l1.num) as consecutivenums
+            from
+            (logs l1
+            join logs l2 on
+              l1.id = l2.id-1 and
+              l1.num = l2.num)
+            join logs l3 on
+              l2.id = l3.id-1 and
+              l1.num = l3.num
+
             
             
 
