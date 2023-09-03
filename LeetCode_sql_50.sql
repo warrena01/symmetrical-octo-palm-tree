@@ -309,6 +309,25 @@
               l1.num = l3.num
 
             -- Question 34:
+            with cte as (
+              select product_id, new_price,
+              rank() over (partition by product_id order by change_date desc) as rank_by_date
+              from products
+              where change_date <= '2019-08-16'
+            )
+            -- takes out data for closest to 2019-08-16
+            select product_id, new_price as price 
+            from cte
+            where rank_by_date = 1
+            -- merge with
+            union
+            -- gives the price of 10 to anything not in previous query
+            select  product_id,
+                    10 as price
+            from products
+            where product_id not in (Select product_id from cte)
+
+            -- Question 35:
             with get_cum_weight as (
                    select person_id, person_name, weight, turn, 
                           sum(weight) over (order by turn) as 'total_weight'
@@ -331,7 +350,7 @@
             from rank_ppl
             where rank_ppl = 1
 
-            -- Question 35: 
+            -- Question 36: 
             select 'Low Salary' as category, 
             sum(if(income < 20000, 1, 0)) as accounts_count
             from accounts
@@ -348,8 +367,60 @@
             sum(if(income > 50000, 1, 0)) as accounts_count
             from accounts
 
+-- ADVANCED STRING FUNCTIONS / REGEX / CLAUSE
 
+            -- Question 44:
+            select user_id, 
+                   UPPER(LEFT(name,1))+LOWER(SUBSTRING(name,2,len(name)-1)) as name
+            from Users
+            order by user_id
+
+            -- Question 45:
+            select * from Patients where conditions like '% DIAB1%' or conditions like 'DIAB1%'
+
+            -- Question 46:
+            delete from Person where id not in (select MIN(id) from Person group by email)
+
+            -- Question 47:
+            select MAX(Salary) as SecondHighestSalary
+            from
+            (
+              select Salary, 
+              DENSE_RANK() OVER(order by Salary desc) as Rank
+              from Employee
+            ) Emp
+            where (Rank = 2);
+
+            -- Question 48:
+            select 
+                  sell_date ,count(product) as num_sold, 
+                  string_agg( product, ',') within group(order by product) as products
+            from (select distinct * from Activities) as new_Activities
+            group by sell_date
+            order by sell_date
+
+            -- Question 49:
+            select product_name
+                 , SUM(unit) as unit
+            from Products P
+            left join Orders O on P.product_id = O.product_id
+            where month(O.order_date) = 2
+              and year(O.order_date) = 2020
+            group by product_name
+            having SUM(unit) >= 100
             
-            
+            -- Question 50:
+            select user_id, name, mail
+            from Users
+            where mail like '[A-Za-z]%@leetcode.com'
+            and left(mail, LEN(mail)-13) not like '%[^A-Za-z0-9._-]%'
+    name,
+    mail 
+FROM 
+    Users
+WHERE
+    mail LIKE '[A-Za-z]%@leetcode.com'
+	AND LEFT(mail, LEN(mail)-13) NOT LIKE '%[^A-Za-z0-9._-]%'
+                        
 
  
